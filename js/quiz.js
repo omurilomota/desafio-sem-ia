@@ -1,132 +1,28 @@
-// Quiz questions array
-const quizQuestions = [
-  {
-    question: "Qual é a tag HTML5 usada para conteúdo de navegação?",
-    options: [
-      "nav",
-      "menu",
-      "navigation",
-      "navigate"
-    ],
-    answer: 0,
-    explanation: "A tag <nav> é usada em HTML5 para definir uma seção de navegação."
-  },
-  {
-    question: "Qual atributo HTML define texto alternativo para imagens?",
-    options: [
-      "title",
-      "src",
-      "alt",
-      "description"
-    ],
-    answer: 2,
-    explanation: "O atributo 'alt' fornece texto alternativo para imagens quando não podem ser exibidas."
-  },
-  {
-    question: "Em HTML, qual elemento é usado para criar uma lista ordenada?",
-    options: [
-      "ul",
-      "ol",
-      "li",
-      "list"
-    ],
-    answer: 1,
-    explanation: "A tag <ol> cria uma lista ordenada (numerada), enquanto <ul> cria uma lista não ordenada (com marcadores)."
-  },
-  {
-    question: "Qual propriedade CSS é usada para alterar a cor de fundo de um elemento?",
-    options: [
-      "color",
-      "background-color",
-      "bgcolor",
-      "background"
-    ],
-    answer: 1,
-    explanation: "'background-color' define a cor de fundo de um elemento. 'color' altera apenas a cor do texto."
-  },
-  {
-    question: "Em CSS, qual seletor é usado para aplicar estilos a um elemento com id 'header'?",
-    options: [
-      ".header",
-      "#header",
-      "*header",
-      "&header"
-    ],
-    answer: 1,
-    explanation: "O seletor '#' é usado para elementos com id específico, enquanto '.' é usado para classes."
-  },
-  {
-    question: "Qual propriedade CSS controla o espaço entre o conteúdo de um elemento e sua borda?",
-    options: [
-      "margin",
-      "border",
-      "spacing",
-      "padding"
-    ],
-    answer: 3,
-    explanation: "'padding' controla o espaço interno, enquanto 'margin' controla o espaço externo do elemento."
-  },
-  {
-    question: "Qual valor de 'display' faz um elemento se comportar como bloco, mas em linha?",
-    options: [
-      "block",
-      "inline",
-      "inline-block",
-      "flex"
-    ],
-    answer: 2,
-    explanation: "'inline-block' permite que elementos tenham largura e altura definidas (como block), mas fiquem em linha (como inline)."
-  },
-  {
-    question: "Qual método JavaScript é usado para remover o último elemento de um array?",
-    options: [
-      "shift()",
-      "pop()",
-      "splice()",
-      "removeLast()"
-    ],
-    answer: 1,
-    explanation: "pop() remove o último elemento, shift() remove o primeiro, e splice() pode remover elementos em qualquer posição."
-  },
-  {
-    question: "Como se declara uma variável que não pode ser reatribuída em JavaScript?",
-    options: [
-      "var",
-      "let",
-      "const",
-      "static"
-    ],
-    answer: 2,
-    explanation: "'const' declara uma variável constante que não pode ser reatribuída. Seu valor inicial é obrigatório."
-  },
-  {
-    question: "Qual método converte JSON string em objeto JavaScript?",
-    options: [
-      "JSON.parse()",
-      "JSON.stringify()",
-      "JSON.convert()",
-      "JSON.toObject()"
-    ],
-    answer: 0,
-    explanation: "JSON.parse() converte string JSON em objeto, enquanto JSON.stringify() faz o oposto (objeto para string)."
-  }
-];
-
-// Export for use in other modules (if needed)
-export { quizQuestions };
+// Importar módulos
+import { quizQuestions, difficultySettings } from './questions.js';
+import { leaderboard } from './leaderboard.js';
+import { learningReport } from './learningReport.js';
 
 class QuizApp {
     constructor() {
+        // Estado do quiz
         this.currentQuestionIndex = 0;
         this.score = 0;
         this.selectedAnswer = null;
-        this.timeLeft = 15;
+        this.timeLeft = 0;
         this.timer = null;
         this.isTimerRunning = false;
         this.totalCorrect = 0;
         this.totalWrong = 0;
+        this.difficulty = null;
+        this.questions = [];
+        this.userAnswers = [];
+        this.startTime = null;
+        this.endTime = null;
         
         // Elementos DOM
+        this.difficultySelector = document.getElementById('difficulty-selector');
+        this.quizContainer = document.getElementById('quiz-container');
         this.questionText = document.getElementById('question-text');
         this.optionsContainer = document.getElementById('options-container');
         this.explanationContainer = document.getElementById('explanation-container');
@@ -143,38 +39,140 @@ class QuizApp {
         this.progressText = document.getElementById('progress-text');
         this.correctCountElement = document.getElementById('correct-count');
         this.wrongCountElement = document.getElementById('wrong-count');
+        this.difficultyDisplay = document.getElementById('difficulty-display');
+        this.currentDifficulty = document.getElementById('current-difficulty');
+        
+        // Modais
+        this.leaderboardModal = document.getElementById('leaderboard-modal');
+        this.statsModal = document.getElementById('stats-modal');
+        this.reportModal = document.getElementById('report-modal');
         
         // Inicializar
         this.init();
     }
     
     init() {
-        this.totalQuestionsElement.textContent = quizQuestions.length;
+        this.setupEventListeners();
+        this.updateDifficultyDisplay();
+    }
+    
+    setupEventListeners() {
+        // Seleção de dificuldade
+        document.querySelectorAll('.difficulty-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const difficulty = card.dataset.difficulty;
+                
+                // Redirecionar para o HTML correspondente
+                switch(difficulty) {
+                    case 'easy':
+                        window.location.href = 'quiz-facil.html';
+                        break;
+                    case 'medium':
+                        window.location.href = 'quiz-medio.html';
+                        break;
+                    case 'hard':
+                        window.location.href = 'quiz-dificil.html';
+                        break;
+                }
+            });
+        });
+        
+        // Controles do quiz
+        this.nextBtn.addEventListener('click', () => this.nextQuestion());
+        this.restartBtn.addEventListener('click', () => this.restartQuiz());
+        this.timerBtn.addEventListener('click', () => this.startTimer());
+        
+        // Leaderboard
+        document.getElementById('view-leaderboard-btn').addEventListener('click', () => this.showLeaderboard());
+        document.getElementById('close-leaderboard-btn').addEventListener('click', () => this.hideLeaderboard());
+        document.getElementById('clear-leaderboard-btn').addEventListener('click', () => this.clearLeaderboard());
+        
+        // Estatísticas
+        document.getElementById('view-stats-btn').addEventListener('click', () => this.showStats());
+        document.getElementById('close-stats-btn').addEventListener('click', () => this.hideStats());
+        
+        // Relatório
+        document.getElementById('close-report-btn').addEventListener('click', () => this.hideReport());
+        document.getElementById('play-again-btn').addEventListener('click', () => this.playAgain());
+        document.getElementById('view-leaderboard-from-report-btn').addEventListener('click', () => {
+            this.hideReport();
+            this.showLeaderboard();
+        });
+        
+        // Filtros do leaderboard
+        document.querySelectorAll('.btn-filter').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.updateLeaderboardContent(e.target.dataset.filter);
+            });
+        });
+    }
+    
+    startQuiz(difficulty) {
+        this.difficulty = difficulty;
+        this.difficultySelector.style.display = 'none';
+        this.quizContainer.style.display = 'block';
+        
+        // Configurar questões
+        this.questions = this.selectQuestions(difficulty);
+        this.userAnswers = new Array(this.questions.length).fill(null);
+        
+        // Configurar temporizador
+        const settings = difficultySettings[difficulty];
+        this.timeLeft = settings.timePerQuestion;
+        
+        // Inicializar contadores
+        this.currentQuestionIndex = 0;
+        this.score = 0;
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.startTime = Date.now();
+        
+        // Atualizar interface
+        this.updateDifficultyDisplay();
+        this.totalQuestionsElement.textContent = this.questions.length;
         this.correctCountElement.textContent = this.totalCorrect;
         this.wrongCountElement.textContent = this.totalWrong;
         this.updateProgressBar();
         this.loadQuestion();
+    }
+    
+    selectQuestions(difficulty) {
+        const allQuestions = quizQuestions[difficulty];
+        const settings = difficultySettings[difficulty];
         
-        // Event listeners
-        this.nextBtn.addEventListener('click', () => this.nextQuestion());
-        this.restartBtn.addEventListener('click', () => this.restartQuiz());
-        this.timerBtn.addEventListener('click', () => this.startTimer());
+        // Embaralhar questões
+        const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+        
+        // Selecionar quantidade desejada
+        return shuffled.slice(0, settings.questionCount);
+    }
+    
+    updateDifficultyDisplay() {
+        if (this.difficulty) {
+            const settings = difficultySettings[this.difficulty];
+            this.currentDifficulty.textContent = settings.name;
+            this.currentDifficulty.dataset.difficulty = this.difficulty;
+            this.difficultyDisplay.style.borderColor = settings.color;
+        }
     }
     
     loadQuestion() {
-        if (this.currentQuestionIndex >= quizQuestions.length) {
+        if (this.currentQuestionIndex >= this.questions.length) {
             this.showResults();
             return;
         }
     
-        const question = quizQuestions[this.currentQuestionIndex];
+        const question = this.questions[this.currentQuestionIndex];
     
         // Atualizar contador
         this.currentQuestionElement.textContent = this.currentQuestionIndex + 1;
         this.scoreElement.textContent = this.score;
     
         // Resetar temporizador
-        this.timeLeft = 15;
+        const settings = difficultySettings[this.difficulty];
+        this.timeLeft = settings.timePerQuestion;
         this.isTimerRunning = false;
         this.updateTimerDisplay();
         this.timerBtn.style.display = 'inline-block';
@@ -197,10 +195,7 @@ class QuizApp {
         question.options.forEach((option, index) => {
             const optionElement = document.createElement('div');
             optionElement.className = 'option';
-            optionElement.style.color = '#333 !important';
-            optionElement.style.visibility = 'visible !important';
-            optionElement.style.opacity = '1 !important';
-    
+            
             const input = document.createElement('input');
             input.type = 'radio';
             input.name = 'answer';
@@ -210,23 +205,12 @@ class QuizApp {
             const label = document.createElement('label');
             label.htmlFor = `option-${index}`;
     
-            // Aplicação da correção: lógica correta de exibição
+            // Tratamento de HTML nas opções
             if (option.includes('<') && option.includes('>')) {
                 label.innerHTML = option.replace(/</g, '<').replace(/>/g, '>');
             } else {
                 label.textContent = option;
             }
-    
-            label.style.color = '#333 !important';
-            label.style.visibility = 'visible !important';
-            label.style.opacity = '1 !important';
-            label.style.fontWeight = '500 !important';
-            label.style.textShadow = 'none !important';
-            label.style.display = 'inline-block !important';
-            label.style.lineHeight = '1.4 !important';
-            label.style.cursor = 'pointer';
-            label.style.flexGrow = '1';
-            label.style.userSelect = 'none';
     
             optionElement.appendChild(input);
             optionElement.appendChild(label);
@@ -269,11 +253,14 @@ class QuizApp {
         this.timerElement.textContent = `${this.timeLeft}s`;
         
         // Mudar cor do temporizador conforme o tempo diminui
-        if (this.timeLeft <= 5) {
+        const settings = difficultySettings[this.difficulty];
+        const warningThreshold = Math.ceil(settings.timePerQuestion * 0.3);
+        
+        if (this.timeLeft <= warningThreshold) {
             this.timerElement.style.color = '#f44336'; // Vermelho
             this.timerElement.style.fontWeight = 'bold';
             this.timerElement.style.animation = 'pulse 0.5s infinite';
-        } else if (this.timeLeft <= 10) {
+        } else if (this.timeLeft <= warningThreshold * 2) {
             this.timerElement.style.color = '#ff9800'; // Laranja
         } else {
             this.timerElement.style.color = '#4CAF50'; // Verde
@@ -281,7 +268,8 @@ class QuizApp {
     }
     
     updateTimerVisual() {
-        const percentage = (this.timeLeft / 15) * 100;
+        const settings = difficultySettings[this.difficulty];
+        const percentage = (this.timeLeft / settings.timePerQuestion) * 100;
         this.timerElement.style.transform = `scale(${0.8 + (percentage / 100) * 0.4})`;
     }
     
@@ -293,6 +281,7 @@ class QuizApp {
         if (this.selectedAnswer === null) {
             this.totalWrong++;
             this.wrongCountElement.textContent = this.totalWrong;
+            this.userAnswers[this.currentQuestionIndex] = -1; // Marcar como não respondida
             this.showTimeUpFeedback();
         }
         
@@ -320,25 +309,19 @@ class QuizApp {
     }
     
     updateProgressBar() {
-        const totalQuestions = quizQuestions.length;
+        const totalQuestions = this.questions.length;
         const progress = ((this.currentQuestionIndex) / totalQuestions) * 100;
         
         this.progressBar.style.width = `${progress}%`;
         this.progressText.textContent = `${this.currentQuestionIndex} de ${totalQuestions}`;
         
-        // Cor da barra de progresso
-        if (progress < 30) {
-            this.progressBar.style.backgroundColor = '#2196F3'; // Azul
-        } else if (progress < 70) {
-            this.progressBar.style.backgroundColor = '#FF9800'; // Laranja
-        } else {
-            this.progressBar.style.backgroundColor = '#4CAF50'; // Verde
-        }
+        // Cor da barra de progresso baseada na dificuldade
+        const settings = difficultySettings[this.difficulty];
+        this.progressBar.style.backgroundColor = settings.color;
     }
     
     playSound(type) {
         try {
-            // Criar sons simples com Web Audio API
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -388,9 +371,10 @@ class QuizApp {
     }
     
     selectAnswer(answerIndex) {
-        if (!this.isTimerRunning) return; // Não permitir seleção se o temporizador não estiver rodando
+        if (!this.isTimerRunning) return;
         
         this.selectedAnswer = answerIndex;
+        this.userAnswers[this.currentQuestionIndex] = answerIndex;
         
         // Destacar opção selecionada
         const options = this.optionsContainer.querySelectorAll('.option');
@@ -403,7 +387,7 @@ class QuizApp {
         });
         
         // Verificar resposta
-        const question = quizQuestions[this.currentQuestionIndex];
+        const question = this.questions[this.currentQuestionIndex];
         const isCorrect = answerIndex === question.answer;
         
         if (isCorrect) {
@@ -469,10 +453,34 @@ class QuizApp {
     
     showResults() {
         clearInterval(this.timer);
+        this.endTime = Date.now();
+        const timeElapsed = Math.round((this.endTime - this.startTime) / 1000);
+        
+        // Salvar no leaderboard
+        leaderboard.saveScore(
+            this.difficulty,
+            this.score,
+            this.questions.length,
+            this.totalCorrect,
+            this.totalWrong,
+            timeElapsed
+        );
+        
+        // Gerar relatório de aprendizagem
+        const report = learningReport.generateReport(
+            this.questions,
+            this.userAnswers,
+            this.difficulty,
+            this.score,
+            this.questions.length,
+            timeElapsed
+        );
+        
+        // Exibir resultados
         this.questionText.innerHTML = `
             <h2 style="color: #4CAF50;">🎉 Quiz Concluído!</h2>
             <p style="font-size: 1.2rem; margin-top: 20px;">
-                Você acertou <strong>${this.score}</strong> de <strong>${quizQuestions.length}</strong> questões.
+                Você acertou <strong>${this.score}</strong> de <strong>${this.questions.length}</strong> questões.
             </p>
             <div style="display: flex; gap: 20px; margin-top: 20px; justify-content: center;">
                 <div style="text-align: center; padding: 10px; background: #e8f5e9; border-radius: 8px; border: 2px solid #4caf50;">
@@ -484,13 +492,34 @@ class QuizApp {
                     <div style="color: #c62828; font-weight: bold;">Erradas</div>
                 </div>
             </div>
+            <div style="margin-top: 20px; text-align: center; color: #666;">
+                <p><strong>Tempo total:</strong> ${timeElapsed}s</p>
+                <p><strong>Dificuldade:</strong> ${difficultySettings[this.difficulty].name}</p>
+            </div>
         `;
         
         this.optionsContainer.innerHTML = '';
         this.explanationContainer.style.display = 'none';
         this.nextBtn.style.display = 'none';
-        this.restartBtn.style.display = 'inline-block';
+        this.restartBtn.style.display = 'none';
         this.timerElement.style.display = 'none';
+        
+        // Exibir relatório
+        this.showReport(report);
+    }
+    
+    showReport(report) {
+        this.reportModal.style.display = 'flex';
+        document.getElementById('report-content').innerHTML = learningReport.generateReportHTML(report);
+    }
+    
+    hideReport() {
+        this.reportModal.style.display = 'none';
+    }
+    
+    playAgain() {
+        this.hideReport();
+        this.restartQuiz();
     }
     
     restartQuiz() {
@@ -498,12 +527,48 @@ class QuizApp {
         this.score = 0;
         this.totalCorrect = 0;
         this.totalWrong = 0;
+        this.userAnswers = new Array(this.questions.length).fill(null);
+        this.startTime = Date.now();
+        
         this.restartBtn.style.display = 'none';
         this.nextBtn.style.display = 'inline-block';
         this.correctCountElement.textContent = this.totalCorrect;
         this.wrongCountElement.textContent = this.totalWrong;
         this.updateProgressBar();
         this.loadQuestion();
+    }
+    
+    // Leaderboard
+    showLeaderboard() {
+        this.leaderboardModal.style.display = 'flex';
+        this.updateLeaderboardContent('all');
+    }
+    
+    hideLeaderboard() {
+        this.leaderboardModal.style.display = 'none';
+    }
+    
+    updateLeaderboardContent(filter) {
+        const content = document.getElementById('leaderboard-content');
+        content.innerHTML = leaderboard.generateLeaderboardHTML(filter === 'all' ? null : filter);
+    }
+    
+    clearLeaderboard() {
+        if (confirm('Tem certeza que deseja limpar o leaderboard? Esta ação não pode ser desfeita.')) {
+            leaderboard.clearLeaderboard();
+            this.updateLeaderboardContent('all');
+        }
+    }
+    
+    // Estatísticas
+    showStats() {
+        this.statsModal.style.display = 'flex';
+        const content = document.getElementById('stats-content');
+        content.innerHTML = leaderboard.generateStatisticsHTML();
+    }
+    
+    hideStats() {
+        this.statsModal.style.display = 'none';
     }
 }
 

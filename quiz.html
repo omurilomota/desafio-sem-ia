@@ -7,9 +7,70 @@
     <link rel="stylesheet" href="css/quiz.css">
 </head>
 <body>
-    <div class="quiz-container">
+    <!-- Tela de Seleção de Dificuldade -->
+    <div class="difficulty-selector" id="difficulty-selector">
+        <div class="selector-container">
+            <h1>🎯 Selecione a Dificuldade</h1>
+            <p>Escolha o nível que deseja enfrentar:</p>
+            
+            <div class="difficulty-grid">
+                <div class="difficulty-card" data-difficulty="easy">
+                    <div class="difficulty-header">
+                        <span class="difficulty-icon">🟢</span>
+                        <h3>Fácil</h3>
+                    </div>
+                    <div class="difficulty-details">
+                        <p><strong>Tempo por questão:</strong> 30s</p>
+                        <p><strong>Questões:</strong> 10</p>
+                        <p><strong>Objetivo:</strong> Aprender o básico</p>
+                    </div>
+                    <button class="btn btn-primary">Iniciar Fácil</button>
+                </div>
+                
+                <div class="difficulty-card" data-difficulty="medium">
+                    <div class="difficulty-header">
+                        <span class="difficulty-icon">🟡</span>
+                        <h3>Médio</h3>
+                    </div>
+                    <div class="difficulty-details">
+                        <p><strong>Tempo por questão:</strong> 20s</p>
+                        <p><strong>Questões:</strong> 10</p>
+                        <p><strong>Objetivo:</strong> Consolidar conhecimentos</p>
+                    </div>
+                    <button class="btn btn-primary">Iniciar Médio</button>
+                </div>
+                
+                <div class="difficulty-card" data-difficulty="hard">
+                    <div class="difficulty-header">
+                        <span class="difficulty-icon">🔴</span>
+                        <h3>Difícil</h3>
+                    </div>
+                    <div class="difficulty-details">
+                        <p><strong>Tempo por questão:</strong> 10s</p>
+                        <p><strong>Questões:</strong> 10</p>
+                        <p><strong>Objetivo:</strong> Dominar o conteúdo</p>
+                    </div>
+                    <button class="btn btn-primary">Iniciar Difícil</button>
+                </div>
+            </div>
+            
+            <div class="selector-actions">
+                <button id="view-leaderboard-btn" class="btn btn-secondary">Ver Leaderboard</button>
+                <button id="view-stats-btn" class="btn btn-secondary">Ver Estatísticas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Principal -->
+    <div class="quiz-container" id="quiz-container" style="display: none;">
         <div class="quiz-header">
-            <h1>QUIZ DE Programação</h1>
+            <div class="header-top">
+                <h1>QUIZ DE PROGRAMAÇÃO</h1>
+                <div class="difficulty-display" id="difficulty-display">
+                    <span class="difficulty-tag" id="current-difficulty">Fácil</span>
+                </div>
+            </div>
+            
             <div class="score-board">
                 <div class="score-stats">
                     <span class="score">Pontuação: <span id="score">0</span></span>
@@ -55,7 +116,66 @@
         </div>
     </div>
 
-    <!-- Importar o arquivo JavaScript do quiz -->
+    <!-- Leaderboard -->
+    <div class="leaderboard-modal" id="leaderboard-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏆 Leaderboard</h2>
+                <button id="close-leaderboard-btn" class="btn btn-secondary">Fechar</button>
+            </div>
+            <div class="modal-body">
+                <div class="leaderboard-controls">
+                    <button class="btn-filter active" data-filter="all">Todas</button>
+                    <button class="btn-filter" data-filter="easy">Fácil</button>
+                    <button class="btn-filter" data-filter="medium">Médio</button>
+                    <button class="btn-filter" data-filter="hard">Difícil</button>
+                    <button id="clear-leaderboard-btn" class="btn btn-danger">Limpar Leaderboard</button>
+                </div>
+                <div id="leaderboard-content">
+                    <!-- Conteúdo do leaderboard será gerado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="stats-modal" id="stats-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Estatísticas</h2>
+                <button id="close-stats-btn" class="btn btn-secondary">Fechar</button>
+            </div>
+            <div class="modal-body">
+                <div id="stats-content">
+                    <!-- Conteúdo das estatísticas será gerado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relatório de Aprendizagem -->
+    <div class="report-modal" id="report-modal" style="display: none;">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>🎓 Relatório de Aprendizagem</h2>
+                <button id="close-report-btn" class="btn btn-secondary">Fechar</button>
+            </div>
+            <div class="modal-body">
+                <div id="report-content">
+                    <!-- Conteúdo do relatório será gerado dinamicamente -->
+                </div>
+                <div class="report-actions">
+                    <button id="play-again-btn" class="btn btn-primary">Jogar Novamente</button>
+                    <button id="view-leaderboard-from-report-btn" class="btn btn-secondary">Ver Leaderboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Importar os arquivos JavaScript -->
+    <script type="module" src="js/questions.js"></script>
+    <script type="module" src="js/leaderboard.js"></script>
+    <script type="module" src="js/learningReport.js"></script>
     <script type="module" src="js/quiz.js"></script>
 </body>
 </html>

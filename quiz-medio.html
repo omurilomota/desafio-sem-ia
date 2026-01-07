@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIZ - Nível Médio</title>
+    <link rel="stylesheet" href="css/quiz-medio.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <div class="header-top">
+                <h1>QUIZ DE PROGRAMAÇÃO - MÉDIO</h1>
+                <div class="difficulty-display">
+                    <span class="difficulty-tag" style="background: #fff3e0; color: #ef6c00; border: 1px solid #ff9800;">🟡 Médio</span>
+                </div>
+            </div>
+            
+            <div class="score-board">
+                <div class="score-stats">
+                    <span class="score">Pontuação: <span id="score">0</span></span>
+                    <span class="question-counter">Questão <span id="current-question">1</span> de <span id="total-questions">10</span></span>
+                </div>
+                <div class="timer-container">
+                    <button id="start-timer-btn" class="btn btn-timer">Iniciar Temporizador</button>
+                    <div id="timer" class="timer-display">20s</div>
+                </div>
+            </div>
+            
+            <div class="progress-container" id="progress-container">
+                <div class="progress-info">
+                    <span id="progress-text">0 de 10</span>
+                    <span class="stats-display">
+                        <span class="stat-item correct">✅ <span id="correct-count">0</span></span>
+                        <span class="stat-item wrong">❌ <span id="wrong-count">0</span></span>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar" style="background: #FF9800;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quiz-content">
+            <div class="question-container" id="question-container">
+                <h2 id="question-text">Carregando pergunta...</h2>
+            </div>
+            
+            <div class="options-container" id="options-container">
+                <!-- As opções serão geradas dinamicamente -->
+            </div>
+            
+            <div class="explanation-container" id="explanation-container" style="display: none;">
+                <p id="explanation-text"></p>
+            </div>
+            
+            <div class="controls">
+                <button id="next-btn" class="btn btn-primary" disabled>Próxima</button>
+                <button id="restart-btn" class="btn btn-secondary" style="display: none;">Reiniciar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Importar os arquivos JavaScript -->
+    <script type="module" src="js/quiz-medio.js"></script>
+</body>
+</html>
