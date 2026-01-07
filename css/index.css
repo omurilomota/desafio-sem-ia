@@ -1,0 +1,61 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    background-color: #333;
+    line-height: 1.6;
+}
+
+.titulo {
+    font-size: 2rem;
+    color: #e4dcdc;
+    text-align: center;
+    margin: 20px 0;
+}
+
+#botao {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+}
+
+.faq {
+    width: 80%;
+    margin: 100px auto;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: center;
+
+}
+
+.faq h3 {
+    margin-bottom: 10px;
+    color: #007BFF;
+}
+
+.faq p {
+    margin-bottom: 20px;
+    color: #afabab;
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #f1f1f1;
+    color: #777;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}

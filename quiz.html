@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUIZ - Desafio Sem IA</title>
+    <link rel="stylesheet" href="css/quiz.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>QUIZ DE Programação</h1>
+            <div class="score-board">
+                <div class="score-stats">
+                    <span class="score">Pontuação: <span id="score">0</span></span>
+                    <span class="question-counter">Questão <span id="current-question">1</span> de <span id="total-questions">1</span></span>
+                </div>
+                <div class="timer-container">
+                    <button id="start-timer-btn" class="btn btn-timer">Iniciar Temporizador</button>
+                    <div id="timer" class="timer-display">15s</div>
+                </div>
+            </div>
+            
+            <div class="progress-container" id="progress-container">
+                <div class="progress-info">
+                    <span id="progress-text">0 de 10</span>
+                    <span class="stats-display">
+                        <span class="stat-item correct">✅ <span id="correct-count">0</span></span>
+                        <span class="stat-item wrong">❌ <span id="wrong-count">0</span></span>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quiz-content">
+            <div class="question-container" id="question-container">
+                <h2 id="question-text">Carregando pergunta...</h2>
+            </div>
+            
+            <div class="options-container" id="options-container">
+                <!-- As opções serão geradas dinamicamente -->
+            </div>
+            
+            <div class="explanation-container" id="explanation-container" style="display: none;">
+                <p id="explanation-text"></p>
+            </div>
+            
+            <div class="controls">
+                <button id="next-btn" class="btn btn-primary" disabled>Próxima</button>
+                <button id="restart-btn" class="btn btn-secondary" style="display: none;">Reiniciar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Importar o arquivo JavaScript do quiz -->
+    <script type="module" src="js/quiz.js"></script>
+</body>
+</html>
